@@ -11,11 +11,11 @@ info_mysql = {'user': 'root',
 
 my_mode = MyModel(info_mysql)
 
-@app.route("/prediction/<content>", methods = ["GET"])
-def get_news(content):
+@app.route("/prediction", methods = ["POST"])
+def prediction():
+    content = request.form.get("content")
     result = my_mode.preiction(content)
     return jsonify({"data": result})
-
 
 if __name__ == "__main__":
     app.run()

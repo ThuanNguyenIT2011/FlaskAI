@@ -5,8 +5,10 @@ from stop_words import get_stop_words
 import joblib
 from stop_words import get_stop_words
 import tensorflow as tf
-
 from mysql.connector import connect
+from urllib3 import request
+
+
 class MyModel:
     def __init__(self, info_database):
         self.stop_words = get_stop_words('vi')
@@ -37,7 +39,7 @@ class MyModel:
 
     def remove_stopword(self, words):
         words = words.split()
-        filtered_words = [word for word in words if word not in  self.stop_words]
+        filtered_words = [word for word in words if word not in self.stop_words]
         filtered_text = ' '.join(filtered_words)
         return filtered_text
 
@@ -54,7 +56,7 @@ class MyModel:
         X_new = pd.Series(data=[content])
 
         sequences_new = self.loaded_tokenizer.texts_to_sequences(X_new)
-        sequences_matrix_new = tf.keras.preprocessing.sequence.pad_sequences(sequences_new, maxlen = self.max_len)
+        sequences_matrix_new = tf.keras.preprocessing.sequence.pad_sequences(sequences_new, maxlen=self.max_len)
 
         predicted_probabilities = self.model.predict(sequences_matrix_new)
 

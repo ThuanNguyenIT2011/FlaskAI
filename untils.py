@@ -1,12 +1,12 @@
 import pandas as pd
 import numpy as np
 import string
-from stop_words import get_stop_words
 import joblib
 from stop_words import get_stop_words
 import tensorflow as tf
-
 from mysql.connector import connect
+
+
 class MyModel:
     def __init__(self, info_database):
         self.stop_words = get_stop_words('vi')
@@ -23,7 +23,7 @@ class MyModel:
         self.load_labels()
 
     def load_labels(self):
-        sql = "SELECT * FROM model_lables"
+        sql = "SELECT * FROM model_labels"
         cur = self.conn.cursor()
         cur.execute(sql)
         for row in cur:
@@ -37,24 +37,25 @@ class MyModel:
 
     def remove_stopword(self, words):
         words = words.split()
-        filtered_words = [word for word in words if word not in  self.stop_words]
+        filtered_words = [word for word in words if word not in self.stop_words]
         filtered_text = ' '.join(filtered_words)
         return filtered_text
 
-    def remove_punctuation(self, words):
+    @staticmethod
+    def remove_punctuation(words):
         translator = str.maketrans('', '', string.punctuation)
         text_without_punct = words.translate(translator)
         return text_without_punct
 
-    def preiction(self, content):
+    def prediction(self, content):
         content = content.lower()
         content = self.remove_punctuation(content)
         content = self.remove_stopword(content)
 
-        X_new = pd.Series(data=[content])
+        x_new = pd.Series(data=[content])
 
-        sequences_new = self.loaded_tokenizer.texts_to_sequences(X_new)
-        sequences_matrix_new = tf.keras.preprocessing.sequence.pad_sequences(sequences_new, maxlen = self.max_len)
+        sequences_new = self.loaded_tokenizer.texts_to_sequences(x_new)
+        sequences_matrix_new = tf.keras.preprocessing.sequence.pad_sequences(sequences_new, maxlen=self.max_len)
 
         predicted_probabilities = self.model.predict(sequences_matrix_new)
 

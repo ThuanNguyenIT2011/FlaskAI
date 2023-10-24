@@ -3,7 +3,7 @@ from untils import MyModel
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app,origins="*")
+CORS(app, origins="*")
 
 info_mysql = {'user': 'root',
               'password': '123456',
@@ -18,8 +18,7 @@ my_mode = MyModel(info_mysql)
 def prediction():
     data = request.get_json()
     content = data.get('content')
-    print(content)
-    result = my_mode.preiction(content)
+    result = my_mode.prediction(content)
     return jsonify({"data": result})
 
 
